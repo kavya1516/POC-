@@ -1,0 +1,133 @@
+
+$contentCatalog=powertoolsContentCatalog
+$contentCV=catalogVersion(CatalogVersion.catalog(Catalog.id[default=$contentCatalog]),CatalogVersion.version[default=Staged])[default=$contentCatalog:Staged]
+$picture=media(code, $contentCV);
+$siteResource=jar:de.hybris.platform.powertoolsstore.constants.PowertoolsStoreConstants&/powertoolsstore/import/sampledata/contentCatalogs/$contentCatalog
+$medias=medias(code, $contentCV);
+$mediaContainer=media(qualifier, $contentCV)[lang=$lang];
+$lang=en
+
+1)
+INSERT_UPDATE PageTemplate;$contentCV[unique=true];uid[unique=true];name;frontendTemplateName;restrictedPageTypes(code);active[default=true]
+;;LoginTeslaPageTemplate;Tesla Page Template;login/structure_loginPageTemplate;ContentPage
+
+2)INSERT_UPDATE ContentPage;$contentCV[unique=true];uid[unique=true];name;masterTemplate(uid,$contentCV);label;defaultPage[default='true'];approvalStatus(code)[default='approved'];homepage[default='false']
+;;LoginTeslaContentPage;Login Content Page;LoginTeslaPageTemplate;LoginCMSPage
+
+
+3) INSERT_UPDATE ContentSlotName;name[unique=true];template(uid,$contentCV)[unique=true][default='LoginTeslaPageTemplate'];validComponentTypes(code);compTypeGroup(code)
+;SiteLogo;;;logo
+;HeaderLinks;;;headerlinks
+;SearchBox;;;searchbox
+;MiniCart;;;minicart
+;NavigationBar;;;navigation
+;Footer;;;footer
+;TopHeaderSlot;;;wide
+;loginParagraph;;;wide
+;loginBanner;;;wide
+
+4) INSERT_UPDATE CMSParagraphComponent;$contentCV[unique=true];uid[unique=true];name;&componentRef;;;;content;
+;;teslaHeadingComponent;Tesla Heading information;teslaHeadingComponent;;;;Login as Dealer here;
+
+INSERT_UPDATE SimpleBannerComponent;$contentCV[unique=true];uid[unique=true];name;&componentRef;;;;urlLink
+;;teslaBannerComponent;Tesla Banner Component;teslaBannerComponent;;;;/images/banners/site/Powertools_148x318_SearchResultsSideBanner_EN_01.jpg
+
+5) 
+INSERT_UPDATE ContentSlot;$contentCV[unique=true];uid[unique=true];name;active;cmsComponents(uid,$contentCV)
+;;teslaParagraphSlot;Tesla Paragraph Slot;true;teslaHeadingComponent
+;;teslaBannerSlot;Tesla Banner Slot;true;teslaBannerComponent
+
+6)
+INSERT_UPDATE ContentSlotForTemplate;$contentCV[unique=true];uid[unique=true];position[unique=true];pageTemplate(uid,$contentCV)[unique=true][default='LoginTeslaPageTemplate'];contentSlot(uid,$contentCV)[unique=true];allowOverwrite
+;;SiteLogo-LoginTeslaPage;SiteLogo;;SiteLogoSlot;true
+;;HomepageLink-LoginTeslaPage;HomepageNavLink;;HomepageNavLinkSlot;true
+;;Footer-LoginTeslaPage;Footer;;FooterSlot;true
+;;HeaderLinks-LoginTeslaPage;HeaderLinks;;HeaderLinksSlot;true
+;;SearchBox-LoginTeslaPage;SearchBox;;SearchBoxSlot;true
+;;TopHeaderSlot-LoginTeslaPage;TopHeaderSlot;;TopHeaderSlot;true
+;;BottomHeaderSlot-LoginTeslaPage;BottomHeaderSlot;;BottomHeaderSlot;true
+;;PlaceholderContentSlot-LoginTeslaPage;PlaceholderContentSlot;;PlaceholderContentSlot;true
+;;offersParagraphSlot-LoginTeslaPage;teslaParagraph;;teslaParagraphSlot;true
+;;offersBannerSlot-LoginTeslaPage;teslaBanner;;teslaBannerSlot;true
+
+7) Skipped
+
+8) HomePageControllerLogin
+/**
+ *
+ */
+package de.hybris.team5.storefront.controllers.pages;
+
+/**
+ * @author Irfan.Katarki
+ *
+ */
+import de.hybris.platform.acceleratorstorefrontcommons.controllers.pages.AbstractPageController;
+import de.hybris.platform.cms2.exceptions.CMSItemNotFoundException;
+import de.hybris.platform.cms2.model.pages.ContentPageModel;
+
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+
+
+@Controller
+@Scope("tenant")
+@RequestMapping("/")
+public class HomePageControllerLogin extends AbstractPageController
+{
+	private static final String TESLALOGIN_CMS_PAGE = "offersCMSPage";
+
+	@RequestMapping(method = RequestMethod.GET)
+	public String getOffers(final Model model) throws CMSItemNotFoundException
+	{
+		final ContentPageModel teslaLoginCMSPage = getContentPageForLabelOrId(TESLALOGIN_CMS_PAGE);
+		storeCmsPageInModel(model, teslaLoginCMSPage);
+		setUpMetaDataForContentPage(model, teslaLoginCMSPage);
+		return getViewForPage(model);
+	}
+
+}
+
+9) teslaLoginLayoutPage
+<%@ page trimDirectiveWhitespaces="true" %>
+<%@ taglib prefix="template" tagdir="/WEB-INF/tags/responsive/template" %>
+<%@ taglib prefix="cms" uri="http://hybris.com/tld/cmstags" %>
+<%@ taglib prefix="common" tagdir="/WEB-INF/tags/responsive/common" %>
+
+ 
+<template:page pageTitle="${pageTitle}">
+    <div id="globalMessages">
+        <common:globalMessages/>
+    </div>
+   
+   
+        <cms:pageSlot position="loginParagraph" var="feature" element="div" class="loginBannerParagraph">
+        <cms:component component="${feature}" />
+    </cms:pageSlot>
+    <div class="loginBannerParentDiv">
+    <cms:pageSlot position="loginBanner" var="feature" element="div" class="span-24 section5 loginBannerImg">
+    <div class="loginBannerChildDiv">
+        <cms:component component="${feature}" />
+        </div>
+    </cms:pageSlot>
+    </div>
+</template:page>
+
+
+10) add images in the folder
+
+11) cms-content-en.impex sample data of powertoolstorefront
+
+
+INSERT_UPDATE Media;$contentCV[unique=true];code[unique=true];@media[translator=de.hybris.platform.impex.jalo.media.MediaDataTranslator];mime[default='image/jpeg'];folder(qualifier)[default='images'];altText
+;;tesla_banner_login.jpg;$siteResource/images/banners/site/tesla_banner_login.jpg;;;"Innovative and Powerful Yet"	
+
+UPDATE SimpleBannerComponent;$contentCV[unique=true];uid[unique=true];$picture[lang=$lang]
+;;teslaBannerComponent;tesla_banner_login.jpg
+
+12) skipped
+
+13) Output: 
