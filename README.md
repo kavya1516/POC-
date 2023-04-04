@@ -3,6 +3,8 @@
 *********************************************************
 B2B Store Front - Tesla Accessories
 *********************************************************
-dimension-products.impex
-products-media.impex
-products-prices.impex
+Model 3
+
+Price:  dimension-products.impex
+Images: products-media.impex
+Price:  products-prices.impex
