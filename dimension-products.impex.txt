@@ -1,0 +1,19 @@
+dimension-products.impex
+
+# -----------------------------------------------------------------------
+# Copyright (c) 2019 SAP SE or an SAP affiliate company. All rights reserved.
+# -----------------------------------------------------------------------
+#PRODUCTS
+# Macros / Replacement Parameter definitions
+$productCatalog=powertoolsProductCatalog
+$catalogVersion=catalogversion(catalog(id[default=$productCatalog]),version[default='Staged'])[unique=true,default=$productCatalog:Staged]
+$supercategories=supercategories(code, $catalogVersion)
+$baseProduct=baseProduct(code,$catalogVersion)
+$approved=approvalstatus(code)[default='approved']
+
+# Language
+$lang=en
+
+UPDATE Product                     ; code[unique=true] ; name[lang=$lang]                                     ; description[lang=$lang]                              ; summary 											   ; $approved             ; $catalogVersion
+                                   ; 3881014          ; Model Y All-Weather Interior Liners      ; Model Y All-Weather Interior Liners are made from a thermoplastic elastomer material with a strong rigid core for extreme-duty protection and spatial coverage.
+      ; Model Y All-Weather Interior Liners     ; approved
